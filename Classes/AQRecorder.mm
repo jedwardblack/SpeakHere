@@ -209,8 +209,11 @@ void AQRecorder::StartRecord(CFStringRef inRecordFile)
 			
 		NSString *recordFile = [NSTemporaryDirectory() stringByAppendingPathComponent: (NSString*)inRecordFile];
         
+        CFStringRef fileName = (CFStringRef)recordFile;
+        CFStringRef fileNameEscaped = CFURLCreateStringByAddingPercentEscapes(NULL,fileName, NULL,
+                                                                              NULL, kCFStringEncodingUTF8);
 			
-		url = CFURLCreateWithString(kCFAllocatorDefault, (CFStringRef)recordFile, NULL);
+		url = CFURLCreateWithString(kCFAllocatorDefault, fileNameEscaped, NULL);
 		
 		// create the audio file
 		OSStatus status = AudioFileCreateWithURL(url, kAudioFileCAFType, &mRecordFormat, kAudioFileFlags_EraseFile, &mRecordFile);
