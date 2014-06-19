@@ -204,16 +204,15 @@ void AQRecorder::StartRecord(CFStringRef inRecordFile)
 		mRecordPacket = 0;
 
 		size = sizeof(mRecordFormat);
-		XThrowIfError(AudioQueueGetProperty(mQueue, kAudioQueueProperty_StreamDescription,	
-										 &mRecordFormat, &size), "couldn't get queue's format");
-			
+		XThrowIfError(AudioQueueGetProperty(mQueue, kAudioQueueProperty_StreamDescription, &mRecordFormat, &size), "couldn't get queue's format");
+        
+        // create temp directory with current path + filename
 		NSString *recordFile = [NSTemporaryDirectory() stringByAppendingPathComponent: (NSString*)inRecordFile];
         
-        CFStringRef fileName = (CFStringRef)recordFile;
-        CFStringRef fileNameEscaped = CFURLCreateStringByAddingPercentEscapes(NULL,fileName, NULL,
-                                                                              NULL, kCFStringEncodingUTF8);
+        // format path
+        CFStringRef recordFileEscaped = CFURLCreateStringByAddingPercentEscapes(NULL, (CFStringRef)recordFile, NULL, NULL, kCFStringEncodingUTF8);
 			
-		url = CFURLCreateWithString(kCFAllocatorDefault, fileNameEscaped, NULL);
+		url = CFURLCreateWithString(kCFAllocatorDefault, recordFileEscaped, NULL);
 		
 		// create the audio file
 		OSStatus status = AudioFileCreateWithURL(url, kAudioFileCAFType, &mRecordFormat, kAudioFileFlags_EraseFile, &mRecordFile);
